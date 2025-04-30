@@ -1,6 +1,7 @@
+
 class AppwriteConstants {
   static const String endpoint     = 'https://cloud.appwrite.io/v1';
-  static const String projectId    = '67e47f410020318233b0';
-  static const String databaseId   = '67e48010003baf12422e';
-  static const String collectionId = '67e4803b000a6605d7d3';
+  static const String projectId    = '681038a5000c747072f0';
+  static const String databaseId   = '6810393e0000c1471a5d';
+  // Por ahora no necesitamos collectionId aquí en auth
 }

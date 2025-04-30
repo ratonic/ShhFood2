@@ -1,3 +1,5 @@
+// lib/core/config/appwrite_config.dart
+
 import 'package:appwrite/appwrite.dart';
 import '../constants/appwrite_constants.dart';
 
