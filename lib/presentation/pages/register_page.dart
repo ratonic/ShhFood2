@@ -1,20 +1,35 @@
-// lib/presentation/pages/register_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../controllers/auth_controller.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:get/get_utils/src/get_utils/get_utils.dart';
+import 'package:panic_button/controllers/auth_controller.dart';
 
-class RegisterPage extends StatelessWidget {
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
+
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
 
-  RegisterPage({super.key});
+  final authCtrl = Get.find<AuthController>();
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _emailCtrl.dispose();
+    _passCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final authCtrl = Get.find<AuthController>();
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -57,9 +72,9 @@ class RegisterPage extends StatelessWidget {
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
                                 authCtrl.register(
-                                  _emailCtrl.text,
-                                  _passCtrl.text,
-                                  _nameCtrl.text,
+                                  _emailCtrl.text.trim(),
+                                  _passCtrl.text.trim(),
+                                  _nameCtrl.text.trim(),
                                 );
                               }
                             },
@@ -104,7 +119,7 @@ class RegisterPage extends StatelessWidget {
       controller: controller,
       obscureText: obscure,
       validator: (v) {
-        if (label == 'Email' && !GetUtils.isEmail(v!)) {
+        if (label == 'Email' && !GetUtils.isEmail(v ?? '')) {
           return 'Email inválido';
         } else if (v == null || v.isEmpty) {
           return 'Requerido';

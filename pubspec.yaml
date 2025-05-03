@@ -36,6 +36,7 @@ dependencies:
   appwrite: ^15.0.2
   hive: ^2.2.3
   hive_flutter: ^1.1.0
+  provider: ^6.0.3
 
 # coméntalos hasta que los necesites:
 #  flutter_map: ^8.1.1
