@@ -1,3 +1,4 @@
+// lib/models/contact_model.dart
 class ContactModel {
   final String id;
   final String name;
@@ -12,6 +13,21 @@ class ContactModel {
     required this.whatsapp,
     required this.userId,
   });
+  ContactModel copyWith({
+    String? id,
+    String? name,
+    String? phone,
+    bool? whatsapp,
+    String? userId,
+  }) {
+    return ContactModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      phone: phone ?? this.phone,
+      whatsapp: whatsapp ?? this.whatsapp,
+      userId: userId ?? this.userId,
+    );
+  }
 
   factory ContactModel.fromJson(Map<String, dynamic> json) => ContactModel(
         id: json['\$id'],
