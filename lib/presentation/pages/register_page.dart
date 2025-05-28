@@ -1,110 +1,139 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-import 'package:get/get_utils/src/get_utils/get_utils.dart';
-import 'package:panic_button/controllers/auth_controller.dart';
+import '../../controllers/auth_controller.dart';
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+class RegisterPage extends StatelessWidget {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _nameController = TextEditingController();
+  final AuthController _authController = Get.find<AuthController>();
 
-  @override
-  State<RegisterPage> createState() => _RegisterPageState();
-}
-
-class _RegisterPageState extends State<RegisterPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameCtrl = TextEditingController();
-  final _emailCtrl = TextEditingController();
-  final _passCtrl = TextEditingController();
-
-  final authCtrl = Get.find<AuthController>();
-
-  @override
-  void dispose() {
-    _nameCtrl.dispose();
-    _emailCtrl.dispose();
-    _passCtrl.dispose();
-    super.dispose();
-  }
+  RegisterPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        // Fondo con gradiente para un aspecto moderno y vibrante
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFFFFF8E1), Color(0xFFFFCC80)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color.fromARGB(255, 75, 0, 130), // Morado oscuro (0xFF4B0082)
+              Color.fromARGB(255, 64, 224, 208), // Turquesa claro (0xFF40E0D0)
+            ],
           ),
         ),
-        padding: const EdgeInsets.all(20),
         child: Center(
           child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  const Icon(Icons.person_add_alt_1_rounded,
-                      size: 80, color: Colors.deepOrange),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Crea tu cuenta',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFE65100),
+            padding: const EdgeInsets.all(30.0), // Mayor padding para un mejor espacio
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Título de la aplicación con estilo llamativo
+                const Text(
+                  'Regístrate en\n¡Shh! Food',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 34, // Tamaño de fuente más grande
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    height: 1.2,
+                    shadows: [
+                      Shadow(
+                        blurRadius: 8.0,
+                        color: Color.fromARGB(100, 0, 0, 0), // Sombra para el texto
+                        offset: Offset(3.0, 3.0),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 50), // Más espacio
+                // Campo de Nombre Completo
+                _buildTextField(
+                  controller: _nameController,
+                  labelText: 'Nombre completo',
+                  icon: Icons.person_outline,
+                ),
+                const SizedBox(height: 20),
+                // Campo de Correo Electrónico
+                _buildTextField(
+                  controller: _emailController,
+                  labelText: 'Correo electrónico',
+                  icon: Icons.email_outlined,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 20),
+                // Campo de Contraseña
+                _buildTextField(
+                  controller: _passwordController,
+                  labelText: 'Contraseña',
+                  icon: Icons.lock_outline,
+                  obscureText: true,
+                ),
+                const SizedBox(height: 30),
+                // Mostrar errores de autenticación
+                Obx(() => _authController.error.value.isNotEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: Text(
+                          _authController.error.value,
+                          style: const TextStyle(
+                              color: Colors.redAccent, fontWeight: FontWeight.bold), // Rojo más vivo
+                          textAlign: TextAlign.center,
+                        ),
+                      )
+                    : const SizedBox.shrink()),
+                // Botón de Registro
+                SizedBox(
+                  width: double.infinity,
+                  height: 55, // Altura del botón
+                  child: Obx(
+                    () => ElevatedButton(
+                      onPressed: _authController.isLoading.value
+                          ? null // Deshabilita el botón si está cargando
+                          : () => _authController.register(
+                                _emailController.text.trim(),
+                                _passwordController.text,
+                                _nameController.text.trim(),
+                              ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF40E0D0), // Fondo turquesa
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15), // Bordes más redondeados
+                        ),
+                        elevation: 8, // Mayor elevación
+                        shadowColor: const Color(0xFF40E0D0).withOpacity(0.5), // Sombra color turquesa
+                      ),
+                      child: _authController.isLoading.value
+                          ? const CircularProgressIndicator(
+                              color: Color(0xFF4B0082), // Color morado oscuro para el indicador
+                            )
+                          : const Text(
+                              'Registrarse',
+                              style: TextStyle(
+                                fontSize: 20, // Texto más grande
+                                color: Color(0xFF4B0082), // Texto morado oscuro
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                     ),
                   ),
-                  const SizedBox(height: 30),
-                  _buildTextField(_nameCtrl, 'Nombre', Icons.person),
-                  const SizedBox(height: 15),
-                  _buildTextField(_emailCtrl, 'Email', Icons.email),
-                  const SizedBox(height: 15),
-                  _buildTextField(_passCtrl, 'Password', Icons.lock,
-                      obscure: true),
-                  const SizedBox(height: 30),
-                  Obx(() {
-                    return authCtrl.isLoading.value
-                        ? const CircularProgressIndicator()
-                        : ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                authCtrl.register(
-                                  _emailCtrl.text.trim(),
-                                  _passCtrl.text.trim(),
-                                  _nameCtrl.text.trim(),
-                                );
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFFF6D00),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 60, vertical: 15),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30)),
-                            ),
-                            child: const Text('Registrarse'),
-                          );
-                  }),
-                  const SizedBox(height: 10),
-                  TextButton(
-                    onPressed: () => Get.back(),
-                    child: const Text('¿Ya tienes cuenta? Inicia sesión'),
+                ),
+                const SizedBox(height: 20),
+                // Botón para ir a la página de inicio de sesión
+                TextButton(
+                  onPressed: () => Get.back(), // Asume que Get.back() regresa a LoginPage
+                  child: const Text(
+                    '¿Ya tienes una cuenta? Inicia sesión',
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white, // Color blanco para el texto
+                        fontWeight: FontWeight.bold),
                   ),
-                  Obx(() {
-                    if (authCtrl.error.value.isNotEmpty) {
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Text(authCtrl.error.value,
-                            style: const TextStyle(color: Colors.red)),
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  }),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -112,28 +141,46 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label,
-      IconData icon,
-      {bool obscure = false}) {
-    return TextFormField(
-      controller: controller,
-      obscureText: obscure,
-      validator: (v) {
-        if (label == 'Email' && !GetUtils.isEmail(v ?? '')) {
-          return 'Email inválido';
-        } else if (v == null || v.isEmpty) {
-          return 'Requerido';
-        } else if (label == 'Password' && v.length < 6) {
-          return 'Mínimo 6 caracteres';
-        }
-        return null;
-      },
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
-        filled: true,
-        fillColor: Colors.white,
+  // Helper para construir TextFields con estilo consistente
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String labelText,
+    required IconData icon,
+    TextInputType? keyboardType,
+    bool obscureText = false,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(25, 255, 255, 255), // Blanco con 0.1 de opacidad
+        borderRadius: BorderRadius.circular(12), // Bordes redondeados
+        boxShadow: const [
+          BoxShadow(
+            color: Color.fromARGB(25, 0, 0, 0), // Negro con 0.1 de opacidad
+            blurRadius: 5,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        style: const TextStyle(color: Colors.white),
+        keyboardType: keyboardType,
+        obscureText: obscureText,
+        decoration: InputDecoration(
+          labelText: labelText,
+          labelStyle: const TextStyle(color: Colors.white70),
+          prefixIcon: Icon(icon, color: Colors.white70), // Ícono del campo
+          border: InputBorder.none, // Elimina el borde por defecto
+          focusedBorder: OutlineInputBorder(
+            borderSide: const BorderSide(
+                color: Color(0xFF40E0D0), width: 2), // Borde turquesa cuando está enfocado
+            borderRadius: BorderRadius.circular(12),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide.none, // Sin borde cuando no está enfocado
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
       ),
     );
   }
